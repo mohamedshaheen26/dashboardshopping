@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
@@ -12,12 +12,12 @@ import Customers from "./pages/Customers";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
-  
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      setIsAuthenticated(false);
+    if (token) {
+      setIsAuthenticated(true);
     }
   }, []);
 
@@ -26,7 +26,7 @@ function App() {
       <Routes>
         {/* Redirect to login if not authenticated */}
         {!isAuthenticated ? (
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         ) : (
           <>
             <Route path="/login" element={<Login />} />
