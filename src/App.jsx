@@ -12,8 +12,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
  import { useEffect } from "react";
  
  function App() {
+  const token = localStorage.getItem("token");
    useEffect(() => {
-     const token = localStorage.getItem("token");
      if (!token) {
        window.location.href = "/login";
      }
