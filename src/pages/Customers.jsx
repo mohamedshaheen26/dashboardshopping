@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../components/Loading";
-
-const API_BASE_URL = "https://nshopping.runasp.net/api";
+import Modal from "../components/Modal";
+import { API_BASE_URL } from "../config";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // Loader state
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -33,19 +36,16 @@ const Customers = () => {
   const DeleteUser = (id) => async () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const response = await fetch(
-        `https://nshopping.runasp.net/api/Users/${id}?confirm=true`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // If authentication is required
-            Accept: "*/*",
-          },
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/Users/${id}?confirm=true`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // If authentication is required
+          Accept: "*/*",
+        },
+      });
 
       if (!response.ok) throw new Error("Failed to delete user");
-
+      setIsDeleteModalOpen(false);
       setCustomers(customers.filter((customer) => customer.id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -86,7 +86,10 @@ const Customers = () => {
                   <td>
                     <button
                       className='btn btn-sm btn-danger'
-                      onClick={DeleteUser(customer.id)}
+                      onClick={() => {
+                        setIsDeleteModalOpen(true);
+                        setUserToDelete(customer);
+                      }}
                     >
                       <i className='fas fa-trash me-1'></i>
                       Delete
@@ -104,6 +107,32 @@ const Customers = () => {
           </tbody>
         </table>
       </div>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title='Delete Category'
+        onConfirm={DeleteUser}
+        confirmText={
+          isSaving ? (
+            <span className='spinner-border spinner-border-sm'></span>
+          ) : (
+            "Delete"
+          )
+        }
+        confirmDisabled={isSaving}
+        closeText='Cancel'
+      >
+        {userToDelete ? (
+          <>
+            <p>
+              Are you sure you want to delete{" "}
+              {userToDelete.firstName + " " + userToDelete.lastName}?
+            </p>
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </Modal>
     </div>
   );
 };

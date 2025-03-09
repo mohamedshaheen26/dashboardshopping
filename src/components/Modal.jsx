@@ -5,6 +5,7 @@ function Modal({
   onClose,
   title,
   children,
+  confirmColor = "primary",
   onConfirm,
   confirmText = "Save",
   closeText = "Close",
@@ -28,7 +29,7 @@ function Modal({
             {onConfirm && (
               <button
                 type='button'
-                className='btn btn-primary'
+                className={`btn btn-${confirmColor}`}
                 onClick={onConfirm}
               >
                 {confirmText}

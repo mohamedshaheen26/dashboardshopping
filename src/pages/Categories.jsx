@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
-
-const API_BASE_URL = "https://nshopping.runasp.net/api";
+import { API_BASE_URL } from "../config";
 
 const CategoryManager = () => {
   const [categories, setCategories] = useState([]);
@@ -230,6 +229,7 @@ const CategoryManager = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title='Delete Category'
+        confirmColor='danger'
         onConfirm={deleteCategory}
         confirmText={
           isSaving ? (

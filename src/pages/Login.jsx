@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
+import { API_BASE_URL } from "../config";
 
 function Login({ setIsAuthenticated }) {
   const [email, setEmail] = useState("");
@@ -31,17 +32,14 @@ function Login({ setIsAuthenticated }) {
     setLoading(true); // Show loader
 
     try {
-      const response = await fetch(
-        "https://nshopping.runasp.net/api/Users/Login",
-        {
-          method: "POST",
-          headers: {
-            accept: "*/*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/Users/Login`, {
+        method: "POST",
+        headers: {
+          accept: "*/*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 

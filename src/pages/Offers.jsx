@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
+import { API_BASE_URL } from "../config";
 
 const OffersPage = () => {
   const [offers, setOffers] = useState([]);
@@ -25,8 +26,6 @@ const OffersPage = () => {
 
   const [formData, setFormData] = useState(initialFormState);
 
-  const API_URL = "https://nshopping.runasp.net/api";
-
   useEffect(() => {
     fetchOffers();
     fetchCategories();
@@ -35,7 +34,7 @@ const OffersPage = () => {
   const fetchOffers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/Offer`);
+      const response = await fetch(`${API_BASE_URL}/Offer`);
       if (!response.ok) throw new Error("Failed to fetch offers");
       const data = await response.json();
       setOffers(data);
@@ -48,7 +47,7 @@ const OffersPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_URL}/Category/AllCategories`);
+      const response = await fetch(`${API_BASE_URL}/Category/AllCategories`);
       if (!response.ok) throw new Error("Failed to fetch categories");
       const data = await response.json();
       setCategories(data);
@@ -67,7 +66,7 @@ const OffersPage = () => {
         endDate: new Date(formData.endDate).toISOString(),
       };
 
-      const response = await fetch(`${API_URL}/offer`, {
+      const response = await fetch(`${API_BASE_URL}/offer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formattedData),
@@ -92,7 +91,7 @@ const OffersPage = () => {
 
     try {
       setIsSaving(true);
-      const response = await fetch(`${API_URL}/offer/${offerToEdit.id}`, {
+      const response = await fetch(`${API_BASE_URL}/offer/${offerToEdit.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -114,7 +113,7 @@ const OffersPage = () => {
   const deleteOffer = async (offerId) => {
     try {
       setIsSaving(true);
-      const response = await fetch(`${API_URL}/offer/${offerId}`, {
+      const response = await fetch(`${API_BASE_URL}/offer/${offerId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_BASE_URL } from "../config";
 
 function Home() {
   const [dashboardData, setDashboardData] = useState({
@@ -12,14 +13,10 @@ function Home() {
     const fetchDashboardData = async () => {
       try {
         const categoriesRes = await fetch(
-          "https://nshopping.runasp.net/api/Category/AllCategories"
+          `${API_BASE_URL}/Category/AllCategories`
         );
-        const productsRes = await fetch(
-          "https://nshopping.runasp.net/api/Product"
-        );
-        const usersRes = await fetch(
-          "https://nshopping.runasp.net/api/Users/All Users"
-        );
+        const productsRes = await fetch(`${API_BASE_URL}/Product`);
+        const usersRes = await fetch(`${API_BASE_URL}/Users/All Users`);
 
         const categories = await categoriesRes.json();
         const products = await productsRes.json();
@@ -30,7 +27,7 @@ function Home() {
         // Fetch orders for each user
         for (const user of customers) {
           const ordersRes = await fetch(
-            `https://nshopping.runasp.net/api/Order/User/${user.id}`
+            `${API_BASE_URL}/Order/User/${user.id}`
           );
           if (ordersRes.ok) {
             const userOrders = await ordersRes.json();
