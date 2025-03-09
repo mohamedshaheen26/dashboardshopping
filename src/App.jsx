@@ -12,26 +12,35 @@ import Customers from "./pages/Customers";
 import { useEffect } from "react";
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      window.location.href = "/login";
+      setIsAuthenticated(false);
     }
-  });
+  }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path='/login' element={<Login />} />
-        <Route path='/' element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path='categories' element={<Categories />} />
-          <Route path='products' element={<Products />} />
-          <Route path='orders' element={<Orders />} />
-          <Route path='offers' element={<Offers />} />
-          <Route path='questions' element={<Questions />} />
-          <Route path='customers' element={<Customers />} />
-        </Route>
+        {/* Redirect to login if not authenticated */}
+        {!isAuthenticated ? (
+          <Route path="*" element={<Navigate to="/login" />} />
+        ) : (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="products" element={<Products />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="offers" element={<Offers />} />
+              <Route path="questions" element={<Questions />} />
+              <Route path="customers" element={<Customers />} />
+            </Route>
+          </>
+        )}
       </Routes>
     </Router>
   );
