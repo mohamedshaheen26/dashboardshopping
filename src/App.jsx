@@ -15,9 +15,11 @@ import Offers from "./pages/Offers";
 import Questions from "./pages/Questions";
 import Customers from "./pages/Customers";
 import { useEffect, useState } from "react";
+import Loader from "./components/Loader"; 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); /
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -26,7 +28,12 @@ function App() {
     } else {
       setIsAuthenticated(false);
     }
+    setLoading(false);
   }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <Router>
@@ -35,7 +42,10 @@ function App() {
           path='/login'
           element={<Login setIsAuthenticated={setIsAuthenticated} />}
         />
-        <Route path='/' element={isAuthenticated && <Layout />}>
+        <Route
+          path='/'
+          element={isAuthenticated ? <Layout /> : <Navigate to='/login' />}
+        >
           <Route index element={<Home />} />
           <Route path='categories' element={<Categories />} />
           <Route path='products' element={<Products />} />
