@@ -7,16 +7,17 @@ function Layout() {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
 
-  const [openSidebarToggle, setOpenSidebarToggle] = useState(false);
+  const [openSidebar, setOpenSidebar] = useState(false);
+
+  const toggleSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
 
   return (
     <div className='grid-container'>
-      {!isLoginPage && <Header />}
+      {!isLoginPage && <Header OpenSidebar={toggleSidebar} />}
       {!isLoginPage && (
-        <Sidebar
-          openSidebarToggle={openSidebarToggle}
-          OpenSidebar={() => setOpenSidebarToggle(!openSidebarToggle)}
-        />
+        <Sidebar openSidebarToggle={openSidebar} OpenSidebar={toggleSidebar} />
       )}
       <main className='content'>
         <Outlet />

@@ -215,7 +215,7 @@ body {
 }
 
 .sidebar-responsive {
-  display: inline !important;
+  left: -250px !important;
   position: absolute;
   z-index: 12 !important;
 }
@@ -313,7 +313,11 @@ body {
   }
 
   #sidebar {
-    display: none;
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999;
   }
 
   .menu-icon {

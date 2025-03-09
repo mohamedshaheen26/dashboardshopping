@@ -39,7 +39,7 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
         </li>
         <li className='sidebar-list-item'>
           <Link to='/offers'>
-            <i class='fas fa-gift'></i> Offers
+            <i className='fas fa-gift'></i> Offers
           </Link>
         </li>
         <li className='sidebar-list-item'>
@@ -49,7 +49,7 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
         </li>
         <li className='sidebar-list-item'>
           <Link to='/questions'>
-            <i class='fas fa-question-circle'></i>   Questions
+            <i className='fas fa-question-circle'></i>   Questions
           </Link>
         </li>
       </ul>

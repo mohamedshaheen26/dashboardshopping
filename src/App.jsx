@@ -18,6 +18,7 @@ function App() {
       window.location.href = "/login";
     }
   });
+
   return (
     <Router>
       <Routes>
