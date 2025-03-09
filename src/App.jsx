@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./App.css";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
@@ -9,7 +9,7 @@ import Orders from "./pages/Orders";
 import Offers from "./pages/Offers";
 import Questions from "./pages/Questions";
 import Customers from "./pages/Customers";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
