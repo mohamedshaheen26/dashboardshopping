@@ -15,11 +15,11 @@ import Offers from "./pages/Offers";
 import Questions from "./pages/Questions";
 import Customers from "./pages/Customers";
 import { useEffect, useState } from "react";
-import Loader from "./components/Loader"; 
+import Loader from "./components/Loader";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); /
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
