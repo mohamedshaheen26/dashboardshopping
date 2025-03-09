@@ -35,10 +35,7 @@ function App() {
           path='/login'
           element={<Login setIsAuthenticated={setIsAuthenticated} />}
         />
-        <Route
-          path='/'
-          element={isAuthenticated ? <Layout /> : <Navigate to='/login' />}
-        >
+        <Route path='/' element={isAuthenticated && <Layout />}>
           <Route index element={<Home />} />
           <Route path='categories' element={<Categories />} />
           <Route path='products' element={<Products />} />
