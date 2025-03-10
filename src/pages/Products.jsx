@@ -15,9 +15,14 @@ const Products = () => {
     categoryId: "",
     imageFile: null,
   });
+  const [imagePreview, setImagePreview] = useState(null); // State for image preview
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // Loader state
 
   useEffect(() => {
     fetchProducts();
@@ -54,7 +59,7 @@ const Products = () => {
       alert("Unauthorized! Please log in again.");
       return;
     }
-
+    setIsSaving(true);
     if (
       !product.name ||
       !product.price ||
@@ -129,6 +134,8 @@ const Products = () => {
       categoryId: productData.categoryId || "",
       imageFile: null, // Reset file input
     });
+    // Set image preview to the existing image URL (if available)
+    setImagePreview(productData.imageUrl || null);
     setIsModalOpen(true);
   };
 
@@ -142,6 +149,22 @@ const Products = () => {
       categoryId: "",
       imageFile: null,
     });
+    setImagePreview(null); // Reset image preview
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Update the product state with the new file
+      setProduct({ ...product, imageFile: file });
+
+      // Generate a preview URL for the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -186,7 +209,10 @@ const Products = () => {
                     </button>
                     <button
                       className='btn btn-danger btn-sm'
-                      onClick={() => deleteProduct(prod.id)}
+                      onClick={() => {
+                        setProductToDelete(prod);
+                        setIsDeleteModalOpen(true);
+                      }}
                     >
                       Delete
                     </button>
@@ -257,35 +283,73 @@ const Products = () => {
                 }
               />
             </div>
-            <div className='col-md-12 mb-2'>
-              <label className='form-label'>Category</label>
-              <select
-                className='form-control'
-                value={product.categoryId}
-                onChange={(e) =>
-                  setProduct({ ...product, categoryId: e.target.value })
-                }
-              >
-                <option value=''>Select Category</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className='col-md-12 mb-2'>
-              <label className='form-label'>Product Image</label>
-              <input
-                type='file'
-                className='form-control'
-                onChange={(e) =>
-                  setProduct({ ...product, imageFile: e.target.files[0] })
-                }
-              />
+            {imagePreview && (
+              <div className='col-lg-4'>
+                <img
+                  src={imagePreview}
+                  alt='Product Preview'
+                  className='img-fluid'
+                  style={{ maxWidth: "200px", maxHeight: "200px" }}
+                />
+              </div>
+            )}
+            <div className={`col-lg-${imagePreview ? "8" : "12"}`}>
+              <div className='row'>
+                <div className='col-md-12 mb-2'>
+                  <label className='form-label'>Category</label>
+                  <select
+                    className='form-control'
+                    value={product.categoryId}
+                    onChange={(e) =>
+                      setProduct({ ...product, categoryId: e.target.value })
+                    }
+                  >
+                    <option value=''>Select Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className='col-md-12 mb-2'>
+                  <label className='form-label'>Product Image</label>
+                  <input
+                    type='file'
+                    className='form-control'
+                    onChange={handleImageChange}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </form>
+      </Modal>
+
+      {/* Delete Category Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title='Delete Category'
+        confirmColor='danger'
+        onConfirm={deleteProduct}
+        confirmText={
+          isSaving ? (
+            <span className='spinner-border spinner-border-sm'></span>
+          ) : (
+            "Delete"
+          )
+        }
+        confirmDisabled={isSaving}
+        closeText='Cancel'
+      >
+        {productToDelete ? (
+          <>
+            <p>Are you sure you want to delete {productToDelete.name}?</p>
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
       </Modal>
     </div>
   );

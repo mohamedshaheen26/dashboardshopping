@@ -5,7 +5,7 @@ function Modal({
   onClose,
   title,
   children,
-  confirmColor = "primary",
+  confirmColor = "success",
   onConfirm,
   confirmText = "Save",
   closeText = "Close",

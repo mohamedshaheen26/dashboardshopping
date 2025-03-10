@@ -34,7 +34,6 @@ const Customers = () => {
   };
 
   const DeleteUser = (id) => async () => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       const response = await fetch(`${API_BASE_URL}/Users/${id}?confirm=true`, {
         method: "DELETE",
@@ -51,6 +50,10 @@ const Customers = () => {
       console.error("Error deleting user:", error);
     }
   };
+
+  const filteredCustomers = customers.filter(
+    (customer) => customer.email !== "admin@example.com"
+  );
 
   return (
     <div className='main-container customers'>
@@ -77,7 +80,7 @@ const Customers = () => {
                 </td>
               </tr>
             ) : customers.length > 0 ? (
-              customers.map((customer, index) => (
+              filteredCustomers.map((customer, index) => (
                 <tr key={customer.id}>
                   <td>{index + 1}</td>
                   <td>{customer.firstName + " " + customer.lastName}</td>
