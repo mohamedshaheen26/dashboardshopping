@@ -33,21 +33,27 @@ const Customers = () => {
     }
   };
 
-  const DeleteUser = (id) => async () => {
+  const DeleteUser = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/Users/${id}?confirm=true`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // If authentication is required
-          Accept: "*/*",
-        },
-      });
+      setIsSaving(true);
+      const response = await fetch(
+        `${API_BASE_URL}/Users/${userToDelete.id}?confirm=true`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // If authentication is required
+            Accept: "*/*",
+          },
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to delete user");
       setIsDeleteModalOpen(false);
-      setCustomers(customers.filter((customer) => customer.id !== id));
+      fetchCustomers();
     } catch (error) {
       console.error("Error deleting user:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
