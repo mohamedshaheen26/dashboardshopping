@@ -54,6 +54,19 @@ body {
   margin-top: 0.25rem;
 }
 
+#alertContainer {
+  position: fixed;
+  top: 60px;
+  left: -335px;
+  width: fit-content;
+  z-index: 99999;
+}
+
+#alertContainer .alert {
+  display: flex;
+  align-items: center;
+}
+
 .main {
   margin-top: 100px;
   border-radius: 15px;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
+import Alert from "../components/Alert";
 import Loading from "../components/Loading";
 import { API_BASE_URL } from "../config";
 
@@ -13,6 +14,17 @@ const CategoryManager = () => {
   const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [isSaving, setIsSaving] = useState(false); // Loader state
   const [loading, setLoading] = useState(false);
+
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState("");
+  const showAlert = (message, type) => {
+    setAlertMessage(() => message);
+    setAlertType(() => type);
+
+    setTimeout(() => {
+      setAlertMessage("");
+    }, 3000);
+  };
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -49,6 +61,10 @@ const CategoryManager = () => {
       setCategoryName("");
       fetchCategories();
       setIsAddModalOpen(false);
+      setAlertMessage(""); // Reset alert first
+      setTimeout(() => {
+        showAlert(`${categoryName} Category Added Successfully`, "success");
+      }, 100);
     } catch (error) {
       console.error("Error adding category:", error);
     } finally {
@@ -68,6 +84,7 @@ const CategoryManager = () => {
       fetchCategories();
       setIsDeleteModalOpen(false);
       setCategoryToDelete(null);
+      showAlert(`${categoryName} Category Deleted Successfully`, "success");
     } catch (error) {
       console.error("Error deleting category:", error);
     } finally {
@@ -90,6 +107,7 @@ const CategoryManager = () => {
       setIsEditModalOpen(false);
       setCategoryToEdit(null);
       setCategoryName("");
+      showAlert(`${categoryName} Category Edit Successfully`, "success");
     } catch (error) {
       console.error("Error editing category:", error);
     } finally {
@@ -99,6 +117,7 @@ const CategoryManager = () => {
 
   return (
     <div className='main-container categories'>
+      {alertMessage && <Alert message={alertMessage} type={alertType} />}
       <div className='main-title'>
         <h3>Categories</h3>
       </div>
