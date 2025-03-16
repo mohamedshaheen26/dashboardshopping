@@ -15,14 +15,14 @@ const Products = () => {
     categoryId: "",
     imageFile: null,
   });
-  const [imagePreview, setImagePreview] = useState(null); // State for image preview
+  const [imagePreview, setImagePreview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); // Loader state
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -38,6 +38,7 @@ const Products = () => {
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
+      alert("Failed to fetch products. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -51,15 +52,17 @@ const Products = () => {
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      alert("Failed to fetch categories. Please try again.");
     }
   };
 
-  const handleSaveProduct = async () => {
+  const handleAddProduct = async () => {
     if (!token) {
       alert("Unauthorized! Please log in again.");
       return;
     }
     setIsSaving(true);
+
     if (
       !product.name ||
       !product.price ||
@@ -67,6 +70,13 @@ const Products = () => {
       !product.categoryId
     ) {
       alert("Please fill all fields");
+      setIsSaving(false);
+      return;
+    }
+
+    if (isNaN(product.price) || isNaN(product.stock)) {
+      alert("Price and stock must be numbers.");
+      setIsSaving(false);
       return;
     }
 
@@ -74,53 +84,158 @@ const Products = () => {
     const formData = new FormData();
     formData.append("Name", product.name);
     formData.append("Description", product.description);
-    formData.append("Price", product.price);
-    formData.append("Stock", product.stock);
-    formData.append("CategoryId", product.categoryId);
-    if (product.imageFile) {
+    formData.append("Price", parseFloat(product.price)); // Ensure correct type
+    formData.append("Stock", parseInt(product.stock)); // Ensure correct type
+    formData.append("CategoryId", parseInt(product.categoryId)); // Ensure correct type
+    if (product.imageFile instanceof File) {
       formData.append("imageFile", product.imageFile);
     }
 
-    try {
-      const method = product.id ? "PUT" : "POST";
-      const url = product.id
-        ? `${API_BASE_URL}/Product/${product.id}`
-        : `${API_BASE_URL}/Product`;
+    // Debug FormData
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
-      const response = await fetch(url, {
-        method,
+    try {
+      const response = await fetch(`${API_BASE_URL}/Product`, {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`, // Ensure correct auth
+          accept: "*/*",
         },
         body: formData,
       });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
 
       if (response.status === 403) {
         alert("Access denied! You don’t have permission.");
         return;
       }
 
-      if (!response.ok) throw new Error("Failed to save product");
+      if (!response.ok) {
+        let errorResponse = await response.text();
+        console.error("Server error response:", errorResponse);
+        alert(`Error: ${errorResponse}`);
+        throw new Error("Failed to add product");
+      }
 
-      fetchProducts();
+      fetchProducts(); // Refresh product list
       setIsModalOpen(false);
       resetForm();
     } catch (error) {
-      console.error("Error saving product:", error);
-      alert("Error saving product. Please try again.");
+      console.error("Error adding product:", error);
+      alert("Error adding product. Please try again.");
     } finally {
       setLoading(false);
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    if (!token) {
+      alert("Unauthorized! Please log in again.");
+      return;
+    }
+    setIsSaving(true);
+
+    // Validate required fields
+    if (
+      !product.name ||
+      !product.price ||
+      !product.stock ||
+      !product.categoryId
+    ) {
+      alert("Please fill all fields");
+      setIsSaving(false);
+      return;
+    }
+
+    setLoading(true);
+
+    // ✅ API expects JSON, not FormData
+    const productData = {
+      name: product.name,
+      description: product.description,
+      price: Number(product.price),
+      stock: Number(product.stock),
+      imageUrl: product.imageUrl, // Use imageUrl instead of file
+      categoryId: Number(product.categoryId),
+    };
+    console.log(productData);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/Product/${product.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json", // ✅ Ensure JSON is sent
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(productData), // ✅ Send JSON instead of FormData
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Server Response:", errorText);
+        throw new Error("Failed to update product");
+      }
+
+      fetchProducts(); // Refresh list
+      setIsModalOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error("Error updating product:", error);
+      alert("Error updating product. Please try again.");
+    } finally {
+      setLoading(false);
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveProduct = async () => {
+    if (product.id) {
+      await handleUpdateProduct(); // Update existing product
+    } else {
+      await handleAddProduct(); // Add new product
     }
   };
 
   const deleteProduct = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
+    if (!token) {
+      alert("Unauthorized! Please log in again.");
       return;
+    }
+
     try {
-      await fetch(`${API_BASE_URL}/Product/${productId}`, { method: "DELETE" });
+      setIsSaving(true);
+
+      const response = await fetch(`${API_BASE_URL}/Product/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 403) {
+        alert(
+          "Access denied! You don’t have permission to delete this product."
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Failed to delete product");
+      }
+
       fetchProducts();
+      setIsDeleteModalOpen(false);
+      setProductToDelete(null);
     } catch (error) {
       console.error("Error deleting product:", error);
+      alert("Error deleting product. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -132,9 +247,8 @@ const Products = () => {
       stock: productData.stock || "",
       description: productData.description || "",
       categoryId: productData.categoryId || "",
-      imageFile: null, // Reset file input
+      imageFile: null,
     });
-    // Set image preview to the existing image URL (if available)
     setImagePreview(productData.imageUrl || null);
     setIsModalOpen(true);
   };
@@ -149,16 +263,19 @@ const Products = () => {
       categoryId: "",
       imageFile: null,
     });
-    setImagePreview(null); // Reset image preview
+    setImagePreview(null);
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Update the product state with the new file
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
+        return;
+      }
+
       setProduct({ ...product, imageFile: file });
 
-      // Generate a preview URL for the image
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -234,7 +351,7 @@ const Products = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={product.id ? "Edit Product" : "Add Product"}
-        onConfirm={handleSaveProduct}
+        onConfirm={handleSaveProduct} // Call handleSaveProduct
         confirmText={loading ? "Saving..." : "Save"}
         closeText='Cancel'
       >
@@ -326,13 +443,12 @@ const Products = () => {
         </form>
       </Modal>
 
-      {/* Delete Category Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title='Delete Category'
+        title='Delete Product'
         confirmColor='danger'
-        onConfirm={deleteProduct}
+        onConfirm={() => deleteProduct(productToDelete.id)}
         confirmText={
           isSaving ? (
             <span className='spinner-border spinner-border-sm'></span>
