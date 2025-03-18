@@ -236,7 +236,7 @@ body {
 }
 
 .sidebar-responsive {
-  left: -250px !important;
+  left: 0 !important;
   position: absolute;
   z-index: 12 !important;
 }
@@ -336,7 +336,7 @@ body {
   #sidebar {
     display: block;
     position: fixed;
-    left: 0;
+    left: -250px;
     top: 0;
     z-index: 9999;
   }

@@ -8,41 +8,34 @@ function Home() {
     customers: 0,
     orders: 0,
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setLoading(true);
         const categoriesRes = await fetch(
           `${API_BASE_URL}/Category/AllCategories`
         );
         const productsRes = await fetch(`${API_BASE_URL}/Product`);
         const usersRes = await fetch(`${API_BASE_URL}/Users/All Users`);
+        const ordersRes = await fetch(`${API_BASE_URL}/Order`);
 
         const categories = await categoriesRes.json();
         const products = await productsRes.json();
         const customers = await usersRes.json();
-
-        let orderCount = 0;
-
-        // Fetch orders for each user
-        for (const user of customers) {
-          const ordersRes = await fetch(
-            `${API_BASE_URL}/Order/User/${user.id}`
-          );
-          if (ordersRes.ok) {
-            const userOrders = await ordersRes.json();
-            orderCount += userOrders.length;
-          }
-        }
+        const orders = await ordersRes.json();
 
         setDashboardData({
           categories: categories.length,
           products: products.length,
           customers: customers.length,
-          orders: orderCount,
+          orders: orders.length,
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -60,25 +53,49 @@ function Home() {
           <div className='card-inner'>
             <h3>Categories</h3>
           </div>
-          <h1>{dashboardData.categories}</h1>
+          <h1>
+            {loading ? (
+              <span className='spinner-border spinner-border-sm'></span>
+            ) : (
+              dashboardData.categories
+            )}
+          </h1>
         </div>
         <div className='card'>
           <div className='card-inner'>
             <h3>Products</h3>
           </div>
-          <h1>{dashboardData.products}</h1>
+          <h1>
+            {loading ? (
+              <span className='spinner-border spinner-border-sm'></span>
+            ) : (
+              dashboardData.products
+            )}
+          </h1>
         </div>
         <div className='card'>
           <div className='card-inner'>
             <h3>Customers</h3>
           </div>
-          <h1>{dashboardData.customers}</h1>
+          <h1>
+            {loading ? (
+              <span className='spinner-border spinner-border-sm'></span>
+            ) : (
+              dashboardData.customers
+            )}
+          </h1>
         </div>
         <div className='card'>
           <div className='card-inner'>
             <h3>Orders</h3>
           </div>
-          <h1>{dashboardData.orders}</h1>
+          <h1>
+            {loading ? (
+              <span className='spinner-border spinner-border-sm'></span>
+            ) : (
+              dashboardData.orders
+            )}
+          </h1>
         </div>
       </div>
     </main>
