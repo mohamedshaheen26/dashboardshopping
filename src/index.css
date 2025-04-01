@@ -8,6 +8,20 @@
   --bg-color: #eece76;
 }
 
+::selection {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: #1d2634;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #414e5c;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -164,6 +178,12 @@ body {
 .header-right .user-log:hover {
   background-color: #1d2634;
 }
+
+@media (max-width: 991px) {
+  .header {
+    margin-left: 0;
+  }
+}
 /* End Header  */
 
 /* Sidebar  */
@@ -244,6 +264,12 @@ body {
 /* Main  */
 .content {
   margin-left: 250px;
+}
+
+@media (max-width: 991px) {
+  .content {
+    margin-left: 0;
+  }
 }
 
 .main-container {
