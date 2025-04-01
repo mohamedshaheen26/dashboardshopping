@@ -19,7 +19,7 @@ function Home() {
         );
         const productsRes = await fetch(`${API_BASE_URL}/Product`);
         const usersRes = await fetch(`${API_BASE_URL}/Users/All Users`);
-        const ordersRes = await fetch(`${API_BASE_URL}/Order`);
+        const ordersRes = await fetch(`${API_BASE_URL}/Order/all`);
 
         const categories = await categoriesRes.json();
         const products = await productsRes.json();

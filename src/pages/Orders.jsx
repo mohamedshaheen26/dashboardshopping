@@ -32,7 +32,7 @@ const Orders = () => {
   const fetchAllOrders = async () => {
     setLoading(true);
     try {
-      const ordersResponse = await fetch(`${API_BASE_URL}/order`, {
+      const ordersResponse = await fetch(`${API_BASE_URL}/order/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!ordersResponse.ok) throw new Error("Failed to fetch orders");
