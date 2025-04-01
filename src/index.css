@@ -139,7 +139,6 @@ body {
   top: 0;
   left: 0;
   margin-left: 250px;
-  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -327,7 +326,6 @@ body {
 /* Medium <= 992px */
 
 @media screen and (max-width: 992px) {
-
   #sidebar {
     display: block;
     position: fixed;
