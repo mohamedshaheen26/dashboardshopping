@@ -8,6 +8,7 @@ function Login({ setIsAuthenticated }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -66,6 +67,10 @@ function Login({ setIsAuthenticated }) {
     return regex.test(email);
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Toggle the state
+  };
+
   return (
     <div className='container'>
       {loading && <Loader />} {/* Show Loader when loading */}
@@ -87,13 +92,21 @@ function Login({ setIsAuthenticated }) {
 
           <div className='mb-3'>
             <label className='form-label'>Password:</label>
-            <input
-              type='password'
-              className='form-control'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className='input-group mb-3'>
+              <input
+                type={showPassword ? "text" : "password"}
+                className='form-control'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span className='input-group-text'>
+                <i
+                  className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+                  onClick={togglePasswordVisibility}
+                ></i>
+              </span>
+            </div>
           </div>
 
           <button type='submit' className='btn btn-primary' disabled={loading}>
