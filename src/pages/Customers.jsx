@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../components/Loading";
 import Modal from "../components/Modal";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { API_BASE_URL } from "../config";
 
 const Customers = () => {
@@ -50,6 +53,19 @@ const Customers = () => {
       if (!response.ok) throw new Error("Failed to delete user");
       setIsDeleteModalOpen(false);
       fetchCustomers();
+      toast.danger(
+        `${
+          userToDelete.firstName + " " + userToDelete.lastName
+        } Category Deleted Successfully`,
+        {
+          position: "top-left",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          draggable: true,
+          closeButton: false,
+        }
+      );
     } catch (error) {
       console.error("Error deleting user:", error);
     } finally {

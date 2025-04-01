@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
-import Alert from "../components/Alert";
 import Loading from "../components/Loading";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { API_BASE_URL } from "../config";
 
 const CategoryManager = () => {
@@ -15,16 +17,6 @@ const CategoryManager = () => {
   const [isSaving, setIsSaving] = useState(false); // Loader state
   const [loading, setLoading] = useState(false);
 
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState("");
-  const showAlert = (message, type) => {
-    setAlertMessage(() => message);
-    setAlertType(() => type);
-
-    setTimeout(() => {
-      setAlertMessage("");
-    }, 3000);
-  };
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -61,10 +53,14 @@ const CategoryManager = () => {
       setCategoryName("");
       fetchCategories();
       setIsAddModalOpen(false);
-      setAlertMessage(""); // Reset alert first
-      setTimeout(() => {
-        showAlert(`${categoryName} Category Added Successfully`, "success");
-      }, 100);
+      toast.success(`${categoryName} Category Added Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error adding category:", error);
     } finally {
@@ -84,7 +80,14 @@ const CategoryManager = () => {
       fetchCategories();
       setIsDeleteModalOpen(false);
       setCategoryToDelete(null);
-      showAlert(`${categoryName} Category Deleted Successfully`, "success");
+      toast.success(`${categoryName} Category Deleted Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error deleting category:", error);
     } finally {
@@ -107,7 +110,14 @@ const CategoryManager = () => {
       setIsEditModalOpen(false);
       setCategoryToEdit(null);
       setCategoryName("");
-      showAlert(`${categoryName} Category Edit Successfully`, "success");
+      toast.success(`${categoryName} Category Edit Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error editing category:", error);
     } finally {
@@ -117,7 +127,6 @@ const CategoryManager = () => {
 
   return (
     <div className='main-container categories'>
-      {alertMessage && <Alert message={alertMessage} type={alertType} />}
       <div className='main-title'>
         <h3>Categories</h3>
       </div>

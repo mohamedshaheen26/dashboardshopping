@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { API_BASE_URL } from "../config";
 
 const OffersPage = () => {
@@ -78,7 +81,14 @@ const OffersPage = () => {
       setOffers([...offers, newOffer]);
       setIsAddModalOpen(false);
       setFormData(initialFormState);
-      console.log("New offer added:", newOffer);
+      toast.success(`New offer added`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error adding offer:", error);
     } finally {
@@ -103,6 +113,15 @@ const OffersPage = () => {
       setOfferToEdit(null);
       setFormData(initialFormState);
       await Promise.all([fetchOffers(), fetchCategories()]); // Refetch both offers and categories
+
+      toast.success(`${offerToEdit.name} updated Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error updating offer:", error);
     } finally {
@@ -110,10 +129,10 @@ const OffersPage = () => {
     }
   };
 
-  const deleteOffer = async (offerId) => {
+  const deleteOffer = async (offer) => {
     try {
       setIsSaving(true);
-      const response = await fetch(`${API_BASE_URL}/offer/${offerId}`, {
+      const response = await fetch(`${API_BASE_URL}/offer/${offer.id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -121,6 +140,15 @@ const OffersPage = () => {
 
       setIsDeleteModalOpen(false);
       await fetchOffers(); // Ensure updated list is displayed
+
+      toast.success(`${offer.name} Deleted Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error deleting offer:", error);
     } finally {
@@ -430,7 +458,7 @@ const OffersPage = () => {
         title='Delete Offer'
         onConfirm={async () => {
           setIsSaving(true);
-          await deleteOffer(offerToDelete.id);
+          await deleteOffer(offerToDelete);
           setIsSaving(false);
         }}
         confirmText={

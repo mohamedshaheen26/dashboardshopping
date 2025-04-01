@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../components/Loading";
-import Alert from "../components/Alert";
 import Modal from "../components/Modal";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { API_BASE_URL } from "../config";
 
@@ -13,17 +14,6 @@ const Orders = () => {
   const [editedStatus, setEditedStatus] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const token = localStorage.getItem("token");
-
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState("");
-  const showAlert = (message, type) => {
-    if (typeof message === "object") {
-      message = message.message || "An error occurred"; // Extract string message from object
-    }
-    setAlertMessage(message);
-    setAlertType(type);
-    setTimeout(() => setAlertMessage(""), 3000);
-  };
 
   useEffect(() => {
     fetchAllOrders();
@@ -59,27 +49,65 @@ const Orders = () => {
         body: JSON.stringify({ status: editedStatus }),
       });
 
-      // ✅ Update UI immediately
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === selectedOrderId
-            ? { ...order, status: editedStatus }
-            : order
-        )
-      );
-      trackOrderStatus(selectedOrderId);
-      setIsEditModalOpen(false); // ✅ Close modal
+      if (!response.ok) throw new Error("Failed to update order status");
+
+      // After successfully updating the backend, fetch the latest orders
+      fetchAllOrders();
+      setIsEditModalOpen(false); // Close the modal
+
+      toast.success(`Order status updated successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error updating order status:", error.message);
+      toast.error(`Failed to update order status`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } finally {
       setIsSaving(false);
     }
   };
 
   const deleteOrder = async (orderId) => {
+    let order = orders.find((order) => order.id === orderId);
+
+    if (!order) {
+      toast.success(`Order not found`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
+      return;
+    }
+
+    if (order.status === "Canceled") {
+      toast.success(`Order has already been canceled`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
+      return;
+    }
+
     try {
-      const response = await fetch(`${API_BASE_URL}/order/${orderId}`, {
-        method: "DELETE",
+      const response = await fetch(`${API_BASE_URL}/Order/Cancel/${orderId}`, {
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -88,36 +116,49 @@ const Orders = () => {
       if (!response.ok) throw new Error("Failed to delete order");
 
       fetchAllOrders();
-      showAlert("Order Have Been Cancelled", "danger");
+      toast.success(`Order Have Been Cancelled`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error deleting order:", error);
     }
   };
 
-  const trackOrderStatus = async (orderId) => {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/order/track-status?orderId=${orderId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  // const trackOrderStatus = async (orderId) => {
+  //   try {
+  //     const response = await fetch(
+  //       `${API_BASE_URL}/order/track-status?orderId=${orderId}`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
 
-      if (!response.ok) throw new Error("Failed to track order status");
+  //     if (!response.ok) throw new Error("Failed to track order status");
 
-      const status = await response.json();
-      showAlert(status, "success");
-    } catch (error) {
-      console.error("Error tracking order status:", error);
-    }
-  };
+  //     const status = await response.json();
+  // toast.success(status, {
+  //   position: "top-left",
+  //   autoClose: 3000,
+  //   hideProgressBar: false,
+  //   closeOnClick: true,
+  //   draggable: true,
+  //   closeButton: false,
+  // });
+  //   } catch (error) {
+  //     console.error("Error tracking order status:", error);
+  //   }
+  // };
 
   return (
     <div className='main-container orders'>
-      {alertMessage && <Alert message={alertMessage} type={alertType} />}
       <div className='main-title'>
         <h3>Orders</h3>
       </div>

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import Loading from "../components/Loading";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { API_BASE_URL } from "../config";
 
 const Products = () => {
@@ -123,6 +126,15 @@ const Products = () => {
       fetchProducts(); // Refresh product list
       setIsModalOpen(false);
       resetForm();
+
+      toast.success(`${product.name} Product Added Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error adding product:", error);
       alert("Error adding product. Please try again.");
@@ -184,6 +196,15 @@ const Products = () => {
       fetchProducts(); // Refresh list
       setIsModalOpen(false);
       resetForm();
+
+      toast.success(`${product.name} Product Updated Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error updating product:", error);
       alert("Error updating product. Please try again.");
@@ -231,6 +252,15 @@ const Products = () => {
       fetchProducts();
       setIsDeleteModalOpen(false);
       setProductToDelete(null);
+
+      toast.success(`${product.name} Product Deleted Successfully`, {
+        position: "top-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        closeButton: false,
+      });
     } catch (error) {
       console.error("Error deleting product:", error);
       alert("Error deleting product. Please try again.");
