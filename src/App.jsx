@@ -12,7 +12,7 @@ import Login from "./pages/Login";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
 import Offers from "./pages/Offers";
-import Questions from "./pages/Questions";
+import Support from "./pages/Support";
 import Customers from "./pages/Customers";
 import { useEffect, useState } from "react";
 import Loader from "./components/Loader";
@@ -51,7 +51,7 @@ function App() {
           <Route path='products' element={<Products />} />
           <Route path='orders' element={<Orders />} />
           <Route path='offers' element={<Offers />} />
-          <Route path='questions' element={<Questions />} />
+          <Route path='support' element={<Support />} />
           <Route path='customers' element={<Customers />} />
         </Route>
       </Routes>

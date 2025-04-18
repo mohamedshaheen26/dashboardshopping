@@ -74,11 +74,11 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
         </li>
         <li
           className={`sidebar-list-item ${
-            location.pathname.startsWith("/questions") ? "active" : ""
+            location.pathname.startsWith("/support") ? "active" : ""
           }`}
-          onClick={() => handleNavigation("/questions")}
+          onClick={() => handleNavigation("/support")}
         >
-          <i className='fas fa-question-circle'></i> Questions
+          <i className='fas fa-question-circle'></i> Support
         </li>
       </ul>
     </aside>
